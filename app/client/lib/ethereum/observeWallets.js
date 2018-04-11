@@ -390,7 +390,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                         Helpers.showNotification('wallet.transactions.notifications.incomingTransaction', {
                             to: Helpers.getAccountNameByAddress(newDocument.address),
                             from: Helpers.getAccountNameByAddress(log.args.from),
-                            amount: EthTools.formatBalance(log.args.value, '0,0.00[000000] unit', 'ether')
+                            amount: EthTools.formatBalance(log.args.value, '0,0.00[000000]', 'ether') + ' ait'
                         }, function() {
 
                             // on click show tx info

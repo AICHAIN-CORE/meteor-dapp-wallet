@@ -307,6 +307,12 @@ Helpers.formatTransactionBalance = function(value, exchangeRates, unit) {
     var unit = unit || EthTools.getUnit(),
         format = '0,0.00';
 
+    var aitUnit = unit;
+    if(unit === 'ether')
+        aitUnit = 'ait';
+    else
+        aitUnit = unit;
+            
     if((unit === 'usd' || unit === 'eur' || unit === 'btc') &&
        exchangeRates && exchangeRates[unit]) {
 
@@ -316,9 +322,9 @@ Helpers.formatTransactionBalance = function(value, exchangeRates, unit) {
             format += '[0]';
 
         var price = new BigNumber(String(web3.fromWei(value, 'ether')), 10).times(exchangeRates[unit].price);
-        return EthTools.formatNumber(price, format) + ' '+ unit.toUpperCase();
+        return EthTools.formatNumber(price, format) + ' '+ aitUnit.toUpperCase();
     } else {
-        return EthTools.formatBalance(value, format + '[0000000000000000] UNIT');
+        return EthTools.formatBalance(value, format + '[0000000000000000]') + aitUnit.toUpperCase();
     }
 };
 
@@ -510,3 +516,37 @@ Helpers.getENSName = function(address, callback) {
         })
     });
 }
+
+Helpers.formatBalanceWithUnit = function(number, format, unit){
+     
+     var balance = EthTools.formatBalance(number, format, unit);
+     var cur_unit = EthTools.getUnit();
+     var aitUnit = cur_unit;
+     
+     if(cur_unit === 'ether')
+         aitUnit = 'AIT';
+     else
+     	   aitUnit = cur_unit;
+     
+     balance += ' ';
+     balance += aitUnit;
+     
+     return balance;
+};
+
+Helpers.formatBalanceWithLowUnit = function(number, format, unit){
+     
+     var balance = EthTools.formatBalance(number, format, unit);
+     var cur_unit = EthTools.getUnit();
+     var aitUnit = cur_unit;
+     
+     if(cur_unit === 'ether')
+         aitUnit = 'ait';
+     else
+     	   aitUnit = cur_unit;
+     
+     balance += ' ';
+     balance += aitUnit;
+     
+     return balance;
+};

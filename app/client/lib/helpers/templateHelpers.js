@@ -98,6 +98,16 @@ Template.registerHelper('unit', function(){
     return EthTools.getUnit();
 });
 
+Template.registerHelper('aitunit', function(){
+	  var unit = EthTools.getUnit();
+	  var aitUnit = unit;
+	  if(unit === 'ether')
+	      aitUnit = 'ait';
+	  else
+	  	  aitUnit = unit;
+    return aitUnit;
+});
+
 /**
 Return the latest block
 
@@ -223,3 +233,6 @@ Takes a camelcase and shows it with spaces
 @return {string} sentence    The same name with spaces
 **/
 Template.registerHelper('toSentence', Helpers.toSentence);
+
+Template.registerHelper('formatBalanceWithUnit', Helpers.formatBalanceWithUnit);
+Template.registerHelper('formatBalanceWithLowUnit', Helpers.formatBalanceWithLowUnit);
