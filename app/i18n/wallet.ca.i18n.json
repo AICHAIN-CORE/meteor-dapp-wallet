@@ -23,7 +23,7 @@
             "texts": {
                 "note": "Nota",
                 "balance": "Balanç",
-                "connectionErrorMist": "No s'ha pogut connectar. Si us plau inicia geth utilitzant:<br><br><small><code>__node__</code><br><br>Assegura't que la ruta al teu IPC és per defecte, quan utilitzis un <code>datadir</code> diferent, ex.<br><code>geth --datadir ... --ipcpath /Users/&lt;elTeuUsuari&gt;/Library/Ethereum/geth.ipc</code><br>o<br><code>geth --datadir ... --ipcpath /Users/&lt;elTeuUsuari&gt;/.ethereum/geth.ipc</code>. <br><br>Afegeix opcionalment: <code>--unlock &lt;elTeuCompte&gt;.</code></small>",
+                "connectionErrorMist": "No s'ha pogut connectar. Si us plau inicia geth utilitzant:<br><br><small><code>__node__</code><br><br>Assegura't que la ruta al teu IPC és per defecte, quan utilitzis un <code>datadir</code> diferent, ex.<br><code>gait --datadir ... --ipcpath /Users/&lt;elTeuUsuari&gt;/Library/AICHAIN/gait.ipc</code><br>o<br><code>geth --datadir ... --ipcpath /Users/&lt;elTeuUsuari&gt;/.aichain/gait.ipc</code>. <br><br>Afegeix opcionalment: <code>--unlock &lt;elTeuCompte&gt;.</code></small>",
                 "connectionErrorBrowser": "No s'ha pogut connectar. Si us plau inicia geth amb les següents opcions:<br><br><small><code>__node__</code><br><br>Opcionalment afegeix: <code>--unlock &lt;elTeuCompte&gt;.</code></small>",
                 "pendingConfirmationsBadge": "Confirmació Pendent!",
                 "nodeSyncing": "__blockDiff__ blocs restants",
@@ -38,7 +38,7 @@
                 }
             },
             "error": {
-                "wrongChain": "Sembla que estàs en una cadena diferent. Si us plau reinicia l'aplicació Ethereum!"
+                "wrongChain": "Sembla que estàs en una cadena diferent. Si us plau reinicia l'aplicació AICHAIN!"
             },
             "warnings": {
                 "txOriginVulnerabilityWallet": "Aquest smart contract conté codi obsolet que pot ser subjecte a atacs de phishing. ",
@@ -91,7 +91,7 @@
             "owners": "Propietaris",
             "walletsDescription": "Aquests contractes s'allotgen a la blockchain i mantenen i asseguren Ether. Poden tenir diversos comptes com a propietaris i mantenir un registre complet de totes les transaccions.",
             "walletsDescriptionNotEnoughFunds": "Una vegada que tingueu més d'1 Ether, podeu crear contractes més sofisticats. Els Wallets són contractes intel·ligents que permeten controlar els vostres fons mitjançant diversos comptes. Poden tenir un límit diari opcional sobre retirades per augmentar la seguretat. Creeu els vostres propis contractes personalitzats a la pestanya <em>Contractes</em>.",
-            "accountsDescription": "Els comptes estan protegits per contrasenyes i poden contenir Ether i tokens basats en Ethereum.  Poden controlar contractes, però no poden mostrar transaccions entrants.",
+            "accountsDescription": "Els comptes estan protegits per contrasenyes i poden contenir Ether i tokens basats en AITCHAIN.  Poden controlar contractes, però no poden mostrar transaccions entrants.",
             "buttons": {
                 "deposit": "Transfereix Ether & Tokens",
                 "depositBitcoin": "Finança amb Bitcoin",
@@ -287,7 +287,7 @@
             "title": "<strong>Tokens</strong> personalitzats",
             "subTitle": "Tokens agegits",
             "admin": "__name__ (pàgina d'administració)",
-            "description": "Els tokens són monedes i altres fungibles construïts sobre la platforma d'Ethereum. Per tal que tots els comptes puguin veure i enviar els tokens, necessites afegir la seva adreça a aquesta llista. Pots crear el teu propi token simplement modificant <a href=\"https://ethereum.org/token#the-code\" target=\"_blank\">aquest exemple d'un contracte de token personalitzat</a> o aprenent-ne més sobre <a href=\"https://www.ethereum.org/token\" target=\"_blank\">tokens d'Ethereum</a>.",
+            "description": "Els tokens són monedes i altres fungibles construïts sobre la platforma d'AICHAIN. Per tal que tots els comptes puguin veure i enviar els tokens, necessites afegir la seva adreça a aquesta llista. Pots crear el teu propi token simplement modificant <a href=\"https://aichain.me/token#the-code\" target=\"_blank\">aquest exemple d'un contracte de token personalitzat</a> o aprenent-ne més sobre <a href=\"https://www.aichain.me/token\" target=\"_blank\">tokens d'AICHAIN</a>.",
             "deleteToken": "Vols eliminar aquest token <strong>__token__</strong> de la teva llista?",
             "addedToken": "__token__ afegit a la teva llista de visualització",
             "editedToken": "Token __token__ editat",
@@ -315,7 +315,7 @@
             "writeToContract": "Escriure al contracte",
             "pickContract": "Selecciona un contracte",
             "pickFunction": "Selecciona una funció",
-            "noContract": "<p>Posa la font del contracte que vulguis aquí. Pots trobar molts exemples de contracte a <a href=\"http://ethereum.org\" target=\"_blank\">ethereum.org</a>: </p> <ul><li><a href=\"http://ethereum.org/token#the-code\" target=\"_blank\">Crear un token</a></li><li><a href=\"http://ethereum.org/crowdsale#the-code\" target=\"_blank\">Començar una crowdsale</a></li><li><a href=\"http://ethereum.org/dao#the-code\" target=\"_blank\">Crear una organització a la blockchain</a></li></ul>",
+            "noContract": "<p>Posa la font del contracte que vulguis aquí. Pots trobar molts exemples de contracte a <a href=\"http://aichain.me\" target=\"_blank\">aichain.me</a>: </p> <ul><li><a href=\"http://aichain.me/token#the-code\" target=\"_blank\">Crear un token</a></li><li><a href=\"http://aichain.me/crowdsale#the-code\" target=\"_blank\">Començar una crowdsale</a></li><li><a href=\"http://aichain.me/dao#the-code\" target=\"_blank\">Crear una organització a la blockchain</a></li></ul>",
             "buttons": {
                 "showContractInfo": "Mostrar informació del contracte",
                 "hideContractInfo": "Ocultar informació del contracte",

@@ -81,7 +81,7 @@ var connect = function(){
             if(e || !sync) {
                 connectToNode();
             } else {
-                EthAccounts.init();
+                AITAccounts.init();
             }
         });
 
@@ -92,7 +92,7 @@ var connect = function(){
             // if in mist, tell to start geth, otherwise start with RPC
             var gethRPC = (web3.admin) ? 'gait' : 'gait --rpc --rpccorsdomain "'+window.location.protocol + '//' + window.location.host+'"';
 
-            EthElements.Modal.question({
+            AITElements.Modal.question({
                 text: new Spacebars.SafeString(TAPi18n.__('wallet.app.texts.connectionError' + (web3.admin ? 'Mist' : 'Browser'), 
                     {node: gethRPC})),
                 ok: function(){

@@ -66,7 +66,7 @@ Template['elements_transactions_table'].helpers({
                     return item;
 
                 // search value
-                if(pattern.test(EthTools.formatBalance(item.value, '0,0.00[000000] unit')))
+                if(pattern.test(Helpers.formatBalanceWithLowUnit(item.value, '0,0.00[000000]')))
                     return item;
 
                 // search date
@@ -130,9 +130,9 @@ Template['elements_transactions_row'].helpers({
     @param {String} account     The _id of the current account
     */
     'incomingTx': function(account){
-        var account = EthAccounts.findOne({_id: account}) || Wallets.findOne({_id: account});
+        var account = AITAccounts.findOne({_id: account}) || Wallets.findOne({_id: account});
         return !!((account && this.from !== account.address) ||
-                  (!account && (EthAccounts.findOne({address: this.to}) || Wallets.findOne({address: this.to}))));
+                  (!account && (AITAccounts.findOne({address: this.to}) || Wallets.findOne({address: this.to}))));
     },
     /**
     Returns the correct text for this transaction
@@ -193,13 +193,13 @@ Template['elements_transactions_row'].helpers({
     @method (unConfirmed)
     */
     'unConfirmed': function() {
-        if(!this.blockNumber || !EthBlocks.latest.number)
+        if(!this.blockNumber || !AITBlocks.latest.number)
             return {
                 confirmations: 0,
                 percent: 0
             };
 
-        var currentBlockNumber = EthBlocks.latest.number + 1,
+        var currentBlockNumber = AITBlocks.latest.number + 1,
             confirmations = currentBlockNumber - this.blockNumber;
         return (blocksForConfirmation >= confirmations && confirmations >= 0)
             ? {
@@ -287,7 +287,7 @@ Template['elements_transactions_row'].events({
     'click tr:not(.pending)': function(e) {
         var $element = $(e.target);
         if(!$element.is('button') && !$element.is('a')) {
-            EthElements.Modal.show({
+            AITElements.Modal.show({
                 template: 'views_modals_transactionInfo',
                 data: {
                     _id: this._id
@@ -339,7 +339,7 @@ Template['elements_transactions_row'].events({
 
                 if(wallet = Wallets.findOne({address: owner})) {
 
-                    // EthElements.Modal.question({
+                    // AITElements.Modal.question({
                     //     text: 'Wallets can not currently confirm multisig transactions',
                     //     ok: true
                     // });
@@ -363,7 +363,7 @@ Template['elements_transactions_row'].events({
             else if(ownerAccounts.length > 1) {
 
                 // show modal
-                EthElements.Modal.question({
+                AITElements.Modal.question({
                     template: 'views_modals_selectAccount',
                     data: {
                         accounts: (type === 'confirm') ? _.difference(ownerAccounts, this.confirmedOwners) : this.confirmedOwners,

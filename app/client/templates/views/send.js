@@ -36,9 +36,9 @@ var checkOverDailyLimit = function(address, wei, template){
         var restDailyLimit = new BigNumber(account.dailyLimit || '0', 10).minus(new BigNumber(account.dailyLimitSpent || '0', 10));
 
         if(restDailyLimit.lt(new BigNumber(wei, 10)))
-            TemplateVar.set('dailyLimitText', new Spacebars.SafeString(TAPi18n.__('wallet.send.texts.overDailyLimit', {limit: EthTools.formatBalance(restDailyLimit.toString(10)), total: EthTools.formatBalance(account.dailyLimit), count: account.requiredSignatures - 1})));
+            TemplateVar.set('dailyLimitText', new Spacebars.SafeString(TAPi18n.__('wallet.send.texts.overDailyLimit', {limit: AITTools.formatBalance(restDailyLimit.toString(10)), total: AITTools.formatBalance(account.dailyLimit), count: account.requiredSignatures - 1})));
         else
-            TemplateVar.set('dailyLimitText', new Spacebars.SafeString(TAPi18n.__('wallet.send.texts.underDailyLimit', {limit: EthTools.formatBalance(restDailyLimit.toString(10)), total: EthTools.formatBalance(account.dailyLimit)})));
+            TemplateVar.set('dailyLimitText', new Spacebars.SafeString(TAPi18n.__('wallet.send.texts.underDailyLimit', {limit: AITTools.formatBalance(restDailyLimit.toString(10)), total: AITTools.formatBalance(account.dailyLimit)})));
     } else
         TemplateVar.set('dailyLimitText', false);
 };
@@ -132,7 +132,7 @@ Template['views_send'].onCreated(function(){
 
     // check if we are still on the correct chain
     Helpers.checkChain(function(error) {
-        if(error && (EthAccounts.find().count() > 0)) {
+        if(error && (AITAccounts.find().count() > 0)) {
             checkForOriginalWallet();
         }
     });
@@ -150,10 +150,10 @@ Template['views_send'].onCreated(function(){
 
     // change the amount when the currency unit is changed
     template.autorun(function(c){
-        var unit = EthTools.getUnit();
+        var unit = AITTools.getUnit();
 
         if(!c.firstRun && TemplateVar.get('selectedToken') === 'ether') {
-            TemplateVar.set('amount', EthTools.toWei(template.find('input[name="amount"]').value.replace(',','.'), unit));
+            TemplateVar.set('amount', AITTools.toWei(template.find('input[name="amount"]').value.replace(',','.'), unit));
         }
     });
 
@@ -221,7 +221,7 @@ Template['views_send'].onRendered(function(){
         // Ether tx estimation
         if(tokenAddress === 'ether') {
 
-            if(EthAccounts.findOne({address: address}, {reactive: false})) {
+            if(AITAccounts.findOne({address: address}, {reactive: false})) {
                 web3.eth.estimateGas({
                     from: address,
                     to: to,
@@ -424,9 +424,14 @@ Template['views_send'].helpers({
     */
     'formattedCoinBalance': function(e){
         var selectedAccount = Helpers.getAccountByAddress(TemplateVar.getFrom('.dapp-select-account.send-from', 'value'));
-
+        var unit = this.symbol;
+        var aitUnit = unit;
+        if(unit === 'ether')
+            aitUnit = 'ait';
+        else
+        	  aitUnit = unit;
         return (this.balances && Number(this.balances[selectedAccount._id]) > 0)
-            ? Helpers.formatNumberByDecimals(this.balances[selectedAccount._id], this.decimals) +' '+ this.symbol
+            ? Helpers.formatNumberByDecimals(this.balances[selectedAccount._id], this.decimals) +' '+ aitUnit
             : false;
     },
     /**
@@ -497,7 +502,7 @@ Template['views_send'].events({
     'keyup input[name="amount"], change input[name="amount"], input input[name="amount"]': function(e, template){
         // ether
         if(TemplateVar.get('selectedToken') === 'ether') {
-            var wei = EthTools.toWei(e.currentTarget.value.replace(',','.'));
+            var wei = AITTools.toWei(e.currentTarget.value.replace(',','.'));
 
             TemplateVar.set('amount', wei || '0');
 
@@ -639,7 +644,7 @@ Template['views_send'].events({
                             FlowRouter.go('dashboard');
 
                         } else {
-                            // EthElements.Modal.hide();
+                            // AITElements.Modal.hide();
 
                             GlobalNotification.error({
                                 content: translateExternalErrorMessage(error.message),
@@ -682,7 +687,7 @@ Template['views_send'].events({
                             FlowRouter.go('dashboard');
                         } else {
 
-                            // EthElements.Modal.hide();
+                            // AITElements.Modal.hide();
 
                             GlobalNotification.error({
                                 content: translateExternalErrorMessage(error.message),
@@ -698,7 +703,7 @@ Template['views_send'].events({
 
                 console.log('estimatedGas: ' + estimatedGas);
 
-                EthElements.Modal.question({
+                AITElements.Modal.question({
                     template: 'views_modals_sendTransactionInfo',
                     data: {
                         from: selectedAccount.address,

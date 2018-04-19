@@ -27,7 +27,7 @@ Template['views_account_create'].onCreated(function(){
 
     // check if we are still on the correct chain
     Helpers.checkChain(function(error) {
-        if(error && (EthAccounts.find().count() > 0)) {
+        if(error && (AITAccounts.find().count() > 0)) {
             checkForOriginalWallet();
         }
     });
@@ -50,7 +50,7 @@ Template['views_account_create'].helpers({
     @method (ownerAccounts)
     */
     'ownerAccounts': function(){
-        var accounts = EthAccounts.find({}, {sort: {balance: -1}}).fetch();
+        var accounts = AITAccounts.find({}, {sort: {balance: -1}}).fetch();
         accounts.sort(Helpers.sortByBalance);
         return accounts;
     },
@@ -81,7 +81,7 @@ Template['views_account_create'].helpers({
     */
     'defaultOwner': function() {
         // Load the accounts owned by user and sort by balance
-        var accounts = EthAccounts.find({}, {sort: {balance: -1}}).fetch();
+        var accounts = AITAccounts.find({}, {sort: {balance: -1}}).fetch();
         accounts.sort(Helpers.sortByBalance);        
 
         if (FlowRouter.getQueryParam('owners')) {
@@ -294,7 +294,7 @@ Template['views_account_create'].events({
                 owners: [deployFrom],
                 name: template.find('input[name="accountName"]').value || TAPi18n.__('wallet.accounts.defaultName'),
                 balance: '0',
-                creationBlock: EthBlocks.latest.number,
+                creationBlock: AITBlocks.latest.number,
                 code: code
             });
 
@@ -306,8 +306,15 @@ Template['views_account_create'].events({
             var formValues = InlineForm('.inline-form');
 
             var owners = _.uniq(_.compact(_.map(template.findAll('input.owners'), function(item){
-                if(web3.isAddress(item.value))
-                    return '0x'+ item.value.replace('0x','').toLowerCase();
+                if(web3.isAddress(item.value)) {
+                    if (item.value.toLowerCase().substring(0, 2) === '0x') {
+                        return 'ai'+ item.value.replace('0x','').toLowerCase();
+                    } else if (item.value.toLowerCase().substring(0, 2) === 'ai') {
+                        return 'ai'+ item.value.replace('ai','').toLowerCase();
+                    } else {
+                        return 'ai'+ item.value.replace('0x','').toLowerCase();
+                    }
+                }
             })));
 
             if(owners.length != formValues.multisigSignees)
@@ -323,7 +330,7 @@ Template['views_account_create'].events({
                 balance: '0',
                 dailyLimit: web3.toWei(formValues.dailyLimitAmount, 'ether'),
                 requiredSignatures: formValues.multisigSignatures,
-                creationBlock: EthBlocks.latest.number,
+                creationBlock: AITBlocks.latest.number,
                 code: code
             });
 
@@ -343,7 +350,15 @@ Template['views_account_create'].events({
 
 
             var address = template.find('input.import').value;
-            address = '0x'+ address.replace('0x','').toLowerCase();
+
+            if (address.toLowerCase().substring(0, 2) === '0x') {
+                address = 'ai'+ address.replace('0x','').toLowerCase();
+            } else if (address.toLowerCase().substring(0, 2) === 'ai') {
+                address = 'ai'+ address.replace('ai','').toLowerCase();
+            } else {
+                address = 'ai'+ address.replace('0x','').toLowerCase();
+            }
+            
             if(Wallets.findOne({address: address}))
                 return GlobalNotification.warning({
                     content: 'i18n:wallet.newWallet.error.alreadyExists',

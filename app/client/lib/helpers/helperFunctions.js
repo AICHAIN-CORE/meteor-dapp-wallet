@@ -70,7 +70,7 @@ Return an account you own, from a list of accounts
 **/
 Helpers.getOwnedAccountFrom = function(accountList){
     // Load the accounts owned by user and sort by balance
-    var accounts = EthAccounts.find({}, {sort: {balance: 1}}).fetch();
+    var accounts = AITAccounts.find({}, {sort: {balance: 1}}).fetch();
     accounts.sort(Helpers.sortByBalance);
 
     // Looks for them among the wallet account owner
@@ -106,7 +106,16 @@ Make a ID out of a given hash and prefix.
 @param {String} hash
 */
 Helpers.makeId = function(prefix, hash){
-    return _.isString(hash) ? prefix +'_'+ hash.replace('0x','').substr(0,10) : null;
+    if(_.isString(hash)){
+        if (hash.toLowerCase().substring(0, 2) === '0x') {
+            return prefix +'_'+ hash.toLowerCase().replace('0x','').substr(0,10);
+        } else if (hash.toLowerCase().substring(0, 2) === 'ai') {
+            return prefix +'_'+ hash.toLowerCase().replace('ai','').substr(0,10);
+        } else {
+            return prefix +'_'+ hash.toLowerCase().replace('0x','').substr(0,10);
+        }
+    }
+    return null;
 };
 
 
@@ -125,7 +134,7 @@ Helpers.formatNumberByDecimals = function(number, decimals){
         numberFormat += "0";
     }
 
-    return EthTools.formatNumber(new BigNumber(number, 10).dividedBy(Math.pow(10, decimals)), numberFormat);
+    return AITTools.formatNumber(new BigNumber(number, 10).dividedBy(Math.pow(10, decimals)), numberFormat);
 };
 
 /**
@@ -166,7 +175,7 @@ Check if the given wallet is a watch only wallet, by checking if we are one of o
 @param {String} id the id of the wallet to check
 */
 Helpers.isWatchOnly = function(id) {
-    return !Wallets.findOne({_id: id, owners: {$in: _.pluck(EthAccounts.find({}).fetch(), 'address')}});
+    return !Wallets.findOne({_id: id, owners: {$in: _.pluck(AITAccounts.find({}).fetch(), 'address')}});
 };
 
 /**
@@ -191,7 +200,7 @@ Helpers.showNotification = function(i18nText, values, callback) {
 };
 
 /**
-Gets the docuement matching the given addess from the EthAccounts or Wallets collection.
+Gets the docuement matching the given addess from the AITAccounts or Wallets collection.
 
 @method getAccountByAddress
 @param {String} address
@@ -201,11 +210,11 @@ Helpers.getAccountByAddress = function(address, reactive) {
     var options = (reactive === false) ? {reactive: false} : {};
     if(_.isString(address))
         address = address.toLowerCase();
-    return EthAccounts.findOne({address: address}, options) || Wallets.findOne({address: address}, options) || CustomContracts.findOne({address: address}, options);
+    return AITAccounts.findOne({address: address}, options) || Wallets.findOne({address: address}, options) || CustomContracts.findOne({address: address}, options);
 };
 
 /**
-Gets the docuement matching the given query from the EthAccounts or Wallets collection.
+Gets the docuement matching the given query from the AITAccounts or Wallets collection.
 
 @method getAccounts
 @param {String} query
@@ -215,11 +224,11 @@ Helpers.getAccounts = function(query, reactive) {
     var options = (reactive === false) ? {reactive: false} : {};
     if(_.isString(query.address))
         query.address = query.address.toLowerCase();
-    return EthAccounts.find(query, options).fetch().concat(Wallets.find(query, options).fetch());
+    return AITAccounts.find(query, options).fetch().concat(Wallets.find(query, options).fetch());
 };
 
 /**
-Gets the docuement matching the given addess from the EthAccounts or Wallets collection and returns its name or address.
+Gets the docuement matching the given addess from the AITAccounts or Wallets collection and returns its name or address.
 
 @method getAccountNameByAddress
 @param {String} name or address
@@ -287,6 +296,22 @@ Helpers.formatTime = function(time, format) { //parameters
         return '';
 };
 
+Helpers.fixAddrPrefix0X = function(address) {
+	  if (address.substring(0, 2) === 'ai') {
+        return '0x'+ address.replace('ai','');
+    } else {
+        return '0x'+ address.replace('0x','');
+    }
+}
+
+Helpers.fixAddrPrefixAI = function(address) {
+	  if (address.substring(0, 2) === '0x') {
+        return 'ai'+ address.replace('0x','');
+    } else {
+        return 'ai'+ address.replace('ai','');
+    }
+}
+
 /**
 Formats a given transactions balance
 
@@ -304,7 +329,7 @@ Helpers.formatTransactionBalance = function(value, exchangeRates, unit) {
     if(unit instanceof Spacebars.kw)
         unit = null;
 
-    var unit = unit || EthTools.getUnit(),
+    var unit = unit || AITTools.getUnit(),
         format = '0,0.00';
 
     var aitUnit = unit;
@@ -322,9 +347,9 @@ Helpers.formatTransactionBalance = function(value, exchangeRates, unit) {
             format += '[0]';
 
         var price = new BigNumber(String(web3.fromWei(value, 'ether')), 10).times(exchangeRates[unit].price);
-        return EthTools.formatNumber(price, format) + ' '+ aitUnit.toUpperCase();
+        return AITTools.formatNumber(price, format) + ' '+ aitUnit.toUpperCase();
     } else {
-        return EthTools.formatBalance(value, format + '[0000000000000000]') + aitUnit.toUpperCase();
+        return AITTools.formatBalance(value, format + '[0000000000000000]') + aitUnit.toUpperCase();
     }
 };
 
@@ -477,7 +502,15 @@ Helpers.getENSName = function(address, callback) {
         callback('Cannot retrieve ENS addresses unless fully synced on main chain', null, null);
         return;
     }
-    var node = namehash(address.toLowerCase().replace('0x','')+'.addr.reverse');
+    var node;
+    if (address.toLowerCase().substring(0, 2) === '0x') {
+        node = namehash(address.toLowerCase().replace('0x','')+'.addr.reverse');
+    } else if (address.toLowerCase().substring(0, 2) === 'ai') {
+        node = namehash(address.toLowerCase().replace('ai','')+'.addr.reverse');
+    } else {
+        node = namehash(address.toLowerCase().replace('0x','')+'.addr.reverse');
+    }
+
     var ensContract = web3.eth.contract(ensContractAbi);
     var resolverContract = web3.eth.contract(resolverContractAbi);
 
@@ -519,8 +552,8 @@ Helpers.getENSName = function(address, callback) {
 
 Helpers.formatBalanceWithUnit = function(number, format, unit){
      
-     var balance = EthTools.formatBalance(number, format, unit);
-     var cur_unit = EthTools.getUnit();
+     var balance = AITTools.formatBalance(number, format, unit);
+     var cur_unit = AITTools.getUnit();
      var aitUnit = cur_unit;
      
      if(cur_unit === 'ether')
@@ -536,8 +569,8 @@ Helpers.formatBalanceWithUnit = function(number, format, unit){
 
 Helpers.formatBalanceWithLowUnit = function(number, format, unit){
      
-     var balance = EthTools.formatBalance(number, format, unit);
-     var cur_unit = EthTools.getUnit();
+     var balance = AITTools.formatBalance(number, format, unit);
+     var cur_unit = AITTools.getUnit();
      var aitUnit = cur_unit;
      
      if(cur_unit === 'ether')

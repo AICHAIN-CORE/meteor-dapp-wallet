@@ -19,6 +19,8 @@ Update wallet balances
 @method updateBalances
 */
 updateBalances = function() {
+    checkTXConfirmations();
+    
     // UPDATE ALL BALANCES (incl. Tokens)
     var walletsAndContracts = Wallets.find().fetch().concat(CustomContracts.find().fetch());
 
@@ -71,7 +73,7 @@ updateBalances = function() {
     });
 
     // UPDATE ENS
-    var allAccounts = EthAccounts.find().fetch().concat(walletsAndContracts);
+    var allAccounts = AITAccounts.find().fetch().concat(walletsAndContracts);
     _.each(allAccounts, function(account){
 
         // Only check ENS names every N minutes
@@ -80,11 +82,11 @@ updateBalances = function() {
             Helpers.getENSName(account.address, function(err, name, returnedAddr) {
 
                 if (!err && account.address.toLowerCase() == returnedAddr){
-                    EthAccounts.update({address: account.address}, {$set:{ name: name, ens: true, ensCheck: now}});
+                    AITAccounts.update({address: account.address}, {$set:{ name: name, ens: true, ensCheck: now}});
                     CustomContracts.update({address: account.address}, {$set:{ name: name, ens: true, ensCheck: now}});
                     Wallets.update({address: account.address}, {$set:{ name: name, ens: true, ensCheck: now}});
                 } else {
-                    EthAccounts.update({address: account.address}, {$set:{ens: false, ensCheck: now}});
+                    AITAccounts.update({address: account.address}, {$set:{ens: false, ensCheck: now}});
                     CustomContracts.update({address: account.address}, {$set:{ens: false, ensCheck: now}});
                     Wallets.update({address: account.address}, {$set:{ens: false, ensCheck: now}});
 
@@ -95,7 +97,7 @@ updateBalances = function() {
 
 
     // UPDATE TOKEN BALANCES
-    var walletsContractsAndAccounts = EthAccounts.find().fetch().concat(Wallets.find().fetch());
+    var walletsContractsAndAccounts = AITAccounts.find().fetch().concat(Wallets.find().fetch());
 
     _.each(Tokens.find().fetch(), function(token){
         if(!token.address)
@@ -122,6 +124,7 @@ updateBalances = function() {
     });
 };
 
+var filter_block = null;
 
 /**
 Observe the latest blocks
@@ -129,18 +132,24 @@ Observe the latest blocks
 @method observeLatestBlocks
 */
 observeLatestBlocks = function(){
-
+    console.log('CLEMENT DEBUG do observeLatestBlocks...');
     // update balances on start
     updateBalances();
 
     // GET the latest blockchain information
-    web3.eth.filter('latest').watch(function(e, res){
+    filter_block = web3.eth.filter('latest').watch(function(e, res){
         if(!e) {
             updateBalances();
+        } else {
+            console.log('CLEMENT DEBUG observeLatestBlocks filter ERROR:');
+            console.log(e);
+            
+            filter_block.stopWatching();
+            filter_block = web3.eth.filter('latest').watch(checkLatestBlocks);
         }
     });
 
-
+    console.log('CLEMENT DEBUG set get peer timer...');
     // check peer count
     Session.setDefault('peerCount', 0);
     getPeerCount();

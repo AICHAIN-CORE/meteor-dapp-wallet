@@ -26,7 +26,7 @@ Template['layout_header'].helpers({
     'goToSend': function() {
         FlowRouter.watchPathChange();
         var address = web3.toChecksumAddress(FlowRouter.getParam('address'));  
-        var accounts = EthAccounts.find({}).fetch();
+        var accounts = AITAccounts.find({}).fetch();
 
         // For some reason the path /send/ doesn't show tokens anymore
         return (address)
@@ -40,7 +40,7 @@ Template['layout_header'].helpers({
     @return {String}
     */
     'totalBalance': function(){
-        var accounts = EthAccounts.find({}).fetch();
+        var accounts = AITAccounts.find({}).fetch();
         var wallets = Wallets.find({owners: {$in: _.pluck(accounts, 'address')}}).fetch();
 
         var balance = _.reduce(_.pluck(_.union(accounts, wallets), 'balance'), function(memo, num){ return memo + Number(num); }, 0);
@@ -56,7 +56,7 @@ Template['layout_header'].helpers({
     @return {String}
     */
     'formattedBlockNumber': function() {
-        return numeral(EthBlocks.latest.number).format('0,0');
+        return numeral(AITBlocks.latest.number).format('0,0');
     },
     /**
     Gets the time since the last block
@@ -65,11 +65,11 @@ Template['layout_header'].helpers({
     */
     'timeSinceBlock': function () {
         
-        if (EthBlocks.latest.timestamp == 0 
-            || typeof EthBlocks.latest.timestamp == 'undefined')   
+        if (AITBlocks.latest.timestamp == 0 
+            || typeof AITBlocks.latest.timestamp == 'undefined')   
             return false;
 
-        var timeSince = moment(EthBlocks.latest.timestamp, "X");
+        var timeSince = moment(AITBlocks.latest.timestamp, "X");
         var now = moment();
         var diff = now.diff(timeSince, "seconds");
 
@@ -94,11 +94,11 @@ Template['layout_header'].helpers({
     */
     'timeSinceBlockText': function () {
         
-        if (EthBlocks.latest.timestamp == 0 
-            || typeof EthBlocks.latest.timestamp == 'undefined')   
+        if (AITBlocks.latest.timestamp == 0 
+            || typeof AITBlocks.latest.timestamp == 'undefined')   
             return TAPi18n.__('wallet.app.texts.waitingForBlocks');
 
-        var timeSince = moment(EthBlocks.latest.timestamp, "X");
+        var timeSince = moment(AITBlocks.latest.timestamp, "X");
         var now = moment();
         var diff = now.diff(timeSince, "seconds");
 

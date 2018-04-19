@@ -40,12 +40,12 @@ var setupContractFilters = function(newDocument){
     events.push(filter);
 
     // get past logs, to set the new blockNumber
-    var currentBlock = EthBlocks.latest.number;
+    var currentBlock = AITBlocks.latest.number;
     filter.get(function(error, logs) {
         if(!error) {
             // update last checkpoint block
             Tokens.update({_id: newDocument._id}, {$set: {
-                checkpointBlock: (currentBlock || EthBlocks.latest.number) - ethereumConfig.rollBackBy
+                checkpointBlock: (currentBlock || AITBlocks.latest.number) - ethereumConfig.rollBackBy
             }});
         }
     });
@@ -54,7 +54,7 @@ var setupContractFilters = function(newDocument){
         if(!error) {
             // Helpers.eventLogs(log);
 
-            if(EthBlocks.latest.number && log.blockNumber > EthBlocks.latest.number) {
+            if(AITBlocks.latest.number && log.blockNumber > AITBlocks.latest.number) {
                 // update last checkpoint block
                 Tokens.update({_id: newDocument._id}, {$set: {
                     checkpointBlock: log.blockNumber
@@ -83,7 +83,7 @@ var setupContractFilters = function(newDocument){
                     }, function() {
 
                         // on click show tx info
-                        EthElements.Modal.show({
+                        AITElements.Modal.show({
                             template: 'views_modals_transactionInfo',
                             data: {
                                 _id: txId
@@ -122,6 +122,7 @@ observeTokens = function(){
         added: function(newDocument) {
 
             // check if wallet has code
+            console.log('CLEMENT DEBUG try getCode on ', newDocument.address);
             web3.eth.getCode(newDocument.address, function(e, code) {
                 if(!e) {
                     if(code && code.length > 2){

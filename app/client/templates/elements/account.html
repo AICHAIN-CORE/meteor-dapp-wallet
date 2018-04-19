@@ -10,7 +10,7 @@
             {{#unless ../main}}
                 <!-- <div class="account-pattern"> -->
                 {{#if address}}
-                    {{> dapp_identicon identity=address class="dapp-small"}}
+                    {{> dapp_identiconAIT identity=address class="dapp-small"}}
                 {{else}}
                     <span class="dapp-identicon dapp-small dapp-icon-loading"></span>
                 {{/if}}
@@ -18,7 +18,7 @@
             {{else}}
                 <div class="account-pattern">
                     {{#if address}}
-                        {{> dapp_identicon identity=address class="dapp-small"}}
+                        {{> dapp_identiconAIT identity=address class="dapp-small"}}
                     {{else}}
                         {{> spinner}}
                     {{/if}}
@@ -29,7 +29,7 @@
             {{#with tokens}}
                 <ul class="token-list">
                     {{#each this}}
-                        <li data-tooltip="{{displayName}} ({{formattedTokenBalance}})" class="simptip-position-right simptip-movable">{{> dapp_identicon identity=address class="dapp-tiny"}}</li>
+                        <li data-tooltip="{{displayName}} ({{formattedTokenBalance}})" class="simptip-position-right simptip-movable">{{> dapp_identiconAIT identity=address class="dapp-tiny"}}</li>
                     {{/each}}
                 </ul>
             {{/with}}

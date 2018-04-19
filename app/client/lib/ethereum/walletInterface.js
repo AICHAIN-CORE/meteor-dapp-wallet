@@ -76,13 +76,13 @@ Deploys testnet wallet, when on other orig wallet was found
 var deployTestnetWallet = function() {
     var account = web3.eth.accounts[0];
 
-    EthElements.Modal.question({
+    AITElements.Modal.question({
         text: new Spacebars.SafeString(TAPi18n.__('wallet.modals.testnetWallet.walletNeedsDeployment', {account: account})),
         cancel: true,
         ok: function() {
 
             // show loading
-            EthElements.Modal.show('views_modals_loading', {closeable: false});
+            AITElements.Modal.show('views_modals_loading', {closeable: false});
 
             // deploy testnet wallet
             WalletContract.new([],'','', {
@@ -97,7 +97,7 @@ var deployTestnetWallet = function() {
                         LocalStore.set('ethereum_testnetWalletContractAddress', contract.address);
                         replaceStubAddress(contract.address);
 
-                        EthElements.Modal.question({
+                        AITElements.Modal.question({
                             text: new Spacebars.SafeString(TAPi18n.__('wallet.modals.testnetWallet.testnetWalletDeployed', {address: web3.toChecksumAddress(contract.address)})),
                             ok: true
                         });
@@ -112,7 +112,7 @@ var deployTestnetWallet = function() {
                         duration: 8
                     });
 
-                    EthElements.Modal.hide();
+                    AITElements.Modal.hide();
                 }
             });
         }
@@ -165,12 +165,12 @@ checkForOriginalWallet = function() {
     return;
 
     var enoughBalance = false;
-    _.each(_.pluck(EthAccounts.find({}).fetch(), 'balance'), function(bal){
+    _.each(_.pluck(AITAccounts.find({}).fetch(), 'balance'), function(bal){
         if(new BigNumber(bal, '10').gt(1000000000000000000)) enoughBalance = true;
     });
 
     // Only check for the wallet if user has enough funds to deploy it
-    if (enoughBalance) {     
+    if (enoughBalance) {
         // see if the original wallet is deployed, if not re-deploy on testnet
         checkCodeOnAddress(mainNetAddress, function() {
             checkCodeOnAddress(testNetAddress, function() {
@@ -215,11 +215,13 @@ checkWalletOwners = function(address) {
 
         if(web3.isAddress(address)) {
             address = address.toLowerCase();
+            console.log('CLEMENT DEBUG WalletContract.at(address) = ', address);
             var myContract = WalletContract.at(address);
 
             myContract.m_numOwners(function(e, numberOfOwners){
                 if(!e) {
                     numberOfOwners = numberOfOwners.toNumber();
+                    console.log('CLEMENT DEBUG WalletContract owner num= ', numberOfOwners);
                     
                     if(numberOfOwners > 0) {
                         var owners = [];
@@ -229,6 +231,7 @@ checkWalletOwners = function(address) {
                             return new P(function (resolve, reject) {
                                 web3.eth.getStorageAt(address, 2+i, function(e, ownerAddress){
                                     if(!e) {
+                                    	  console.log('CLEMENT DEBUG ownerAddress = ', ownerAddress);
                                         ownerAddress = ownerAddress.replace('0x000000000000000000000000','0x');
                                         
                                         if(owners.length > numberOfOwners)
@@ -237,7 +240,7 @@ checkWalletOwners = function(address) {
                                         if(web3.isAddress(ownerAddress) && ownerAddress !== '0x0000000000000000000000000000000000000000') {
                                             myContract.isOwner.call(ownerAddress, {from: ownerAddress}, function(e, isOwner){
                                                 if(!e && isOwner) {
-                                                    owners.push(ownerAddress);
+                                                    owners.push(Helpers.fixAddrPrefixAI(ownerAddress));
                                                     owners = _.uniq(owners);
                                                     owners.sort();
                                                 }
@@ -274,6 +277,7 @@ checkWalletOwners = function(address) {
                     }
 
                 } else {
+                	  console.log('CLEMENT DEBUG WalletContract owner number ERROR!');
                     reject(e);
                 }
             })

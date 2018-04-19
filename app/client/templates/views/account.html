@@ -10,7 +10,7 @@
                         {{> elements_vulnerabilities_txorigin}}
                     {{/if}}
                 {{else}}
-                    {{> dapp_identicon identity=address}}
+                    {{> dapp_identiconAIT identity=address}}
                     <h1 class="{{ensClass}}">
                         <span>{{displayName}}</span>
 
@@ -23,7 +23,7 @@
             </div>
 
             <div class="accounts-page-summary">
-                {{> dapp_identicon identity=address}}
+                {{> dapp_identiconAIT identity=address}}
                 <header class="{{ensClass}}">
                     <h1>
                         {{#if ens}}
@@ -47,7 +47,7 @@
                         <tbody>
                             {{#each this}}
                                 <tr>
-                                    <td>{{> dapp_identicon identity=address class="dapp-tiny"}}
+                                    <td>{{> dapp_identiconAIT identity=address class="dapp-tiny"}}
                                     <strong>{{name}}</strong></td>
                                     <td>{{formattedTokenBalance}}</td>
                                     <td>
@@ -75,11 +75,11 @@
                         {{#if showDailyLimit}}
                             <div class="col col-4 mobile-full">
                                 {{#if $gte version 1}}
-                                    <h3>{{i18n "wallet.accounts.dailyLimit"}} <span style="font-weight: 200;">{{dapp_formatBalance dailyLimit "0,0.00 unit"}}</span></h3>
-                                    {{dapp_formatBalance availableToday "0,0.00 unit"}} {{i18n "wallet.accounts.dailyLimitRemaining"}}
+                                    <h3>{{i18n "wallet.accounts.dailyLimit"}} <span style="font-weight: 200;">{{formatBalanceWithLowUnit dailyLimit "0,0.00"}}</span></h3>
+                                    {{formatBalanceWithLowUnit availableToday "0,0.00"}} {{i18n "wallet.accounts.dailyLimitRemaining"}}
                                 {{else}}
                                     <h3>{{i18n "wallet.accounts.dailyLimit"}}</h3>
-                                    {{dapp_formatBalance dailyLimit "0,0.00 unit"}}
+                                    {{formatBalanceWithLowUnit dailyLimit "0,0.00"}}
                                 {{/if}}
                             </div>
                         {{/if}}
@@ -92,7 +92,7 @@
                             <h3>{{i18n "wallet.accounts.owners"}}</h3>
                             {{#each owners}}
                                 <span data-tooltip="{{accountNameOrAddress this}}" class="simptip-position-bottom simptip-movable">
-                                    {{> dapp_identicon identity=this class="dapp-tiny" link=ownerLink}}
+                                    {{> dapp_identiconAIT identity=this class="dapp-tiny" link=ownerLink}}
                                 </span>
                             {{/each}}
                         </div>

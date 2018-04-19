@@ -59,7 +59,7 @@ var checkForVulnerableWallet = function(wallet){
                 if(vulnerableFull || vulnerableStub || vulnerableStubDynamic){
                     vulnerable = true;
 
-                    EthElements.Modal.question({
+                    AITElements.Modal.question({
                         text: TAPi18n.__('wallet.app.warnings.txOriginVulnerabilityPopup'),
                         ok: function(){
                             FlowRouter.go('/account/'+ wallet.address)
@@ -262,10 +262,11 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
     if(newDocument.imported) {
 
         Helpers.eventLogs('Imported wallet: '+ newDocument.address +' checking for any log from block #'+ newDocument.creationBlock);
+        console.log('CLEMENT DEBUG Imported wallet: '+ newDocument.address +' checking for any log from block #'+ newDocument.creationBlock);
         web3.eth.filter({address: newDocument.address, fromBlock: newDocument.creationBlock, toBlock: 'latest'}).get(function(error, logs) {
             if(!error) {
 
-                var creationBlock = EthBlocks.latest.number;
+                var creationBlock = AITBlocks.latest.number;
 
 
                 // get earliest block number of appeared log
@@ -290,7 +291,10 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
 
                 // add contract filters
                 setupContractFilters(newDocument, true);
-            }
+            } else {
+                    console.log('CLEMENT DEBUG observeWallet filter ERROR 2:');
+                    console.log(e);
+                }
         });
 
     // CHECK if for the contract address
@@ -352,12 +356,12 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
         events.push(filter);
         
         // get past logs, to set the new blockNumber
-        var currentBlock = EthBlocks.latest.number;
+        var currentBlock = AITBlocks.latest.number;
         filter.get(function(error, logs) {
             if(!error) {
                 // update last checkpoint block
                 Wallets.update({_id: newDocument._id}, {$set: {
-                    checkpointBlock: (currentBlock || EthBlocks.latest.number) - ethereumConfig.rollBackBy
+                    checkpointBlock: (currentBlock || AITBlocks.latest.number) - ethereumConfig.rollBackBy
                 }});
             }
         });
@@ -366,7 +370,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
             if(!error) {
                 Helpers.eventLogs(log);
 
-                if(EthBlocks.latest.number && log.blockNumber > EthBlocks.latest.number) {
+                if(AITBlocks.latest.number && log.blockNumber > AITBlocks.latest.number) {
                     // update last checkpoint block
                     Wallets.update({_id: newDocument._id}, {$set: {
                         checkpointBlock: log.blockNumber
@@ -390,11 +394,11 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                         Helpers.showNotification('wallet.transactions.notifications.incomingTransaction', {
                             to: Helpers.getAccountNameByAddress(newDocument.address),
                             from: Helpers.getAccountNameByAddress(log.args.from),
-                            amount: EthTools.formatBalance(log.args.value, '0,0.00[000000]', 'ether') + ' ait'
+                            amount: AITTools.formatBalance(log.args.value, '0,0.00[000000]', 'ether') + ' ait'
                         }, function() {
 
                             // on click show tx info
-                            EthElements.Modal.show({
+                            AITElements.Modal.show({
                                 template: 'views_modals_transactionInfo',
                                 data: {
                                     _id: txId
@@ -422,11 +426,11 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                         Helpers.showNotification('wallet.transactions.notifications.outgoingTransaction', {
                             to: Helpers.getAccountNameByAddress(log.args.to),
                             from: Helpers.getAccountNameByAddress(newDocument.address),
-                            amount: EthTools.formatBalance(log.args.value, '0,0.00[000000] unit', 'ether')
+                            amount: AITTools.formatBalance(log.args.value, '0,0.00[000000]', 'ether') + ' ait'
                         }, function() {
 
                             // on click show tx info
-                            EthElements.Modal.show({
+                            AITElements.Modal.show({
                                 template: 'views_modals_transactionInfo',
                                 data: {
                                     _id: txId
@@ -449,7 +453,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
 
 
                             // PREVENT SHOWING pending confirmations, of WATCH ONLY WALLETS
-                            if(!(from = Wallets.findOne({address: log.address})) || !EthAccounts.findOne({address: {$in: from.owners}}))
+                            if(!(from = Wallets.findOne({address: log.address})) || !AITAccounts.findOne({address: {$in: from.owners}}))
                                 return;
 
                             // add pending confirmation,
@@ -474,7 +478,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                                     initiator: Helpers.getAccountNameByAddress(log.args.initiator),
                                     to: Helpers.getAccountNameByAddress(log.args.to),
                                     from: Helpers.getAccountNameByAddress(newDocument.address),
-                                    amount: EthTools.formatBalance(log.args.value, '0,0.00[000000] unit', 'ether')
+                                    amount: AITTools.formatBalance(log.args.value, '0,0.00[000000]', 'ether') + 'ait'
                                 }, function() {
                                     FlowRouter.go('/account/'+ newDocument.address);
                                 });
@@ -540,13 +544,15 @@ observeWallets = function(){
     @param {Object} oldDocument
     */
     var checkWalletConfirmations = function(newDocument, oldDocument){
-        var confirmations = EthBlocks.latest.number - newDocument.creationBlock;
+        var confirmations = AITBlocks.latest.number - newDocument.creationBlock;
 
         if(newDocument.address && (!oldDocument || (oldDocument && !oldDocument.address)) && confirmations < ethereumConfig.requiredConfirmations) {
+        	  console.log('CLEMENT DEBUG observeWallet setup filter...');
             var filter = web3.eth.filter('latest');
             filter.watch(function(e, blockHash){
+            	  console.log('CLEMENT DEBUG observeWallet get a new block...');
                 if(!e) {
-                    var confirmations = EthBlocks.latest.number - newDocument.creationBlock;
+                    var confirmations = AITBlocks.latest.number - newDocument.creationBlock;
 
                     if(confirmations < ethereumConfig.requiredConfirmations && confirmations > 0) {
                         Helpers.eventLogs('Checking wallet address '+ newDocument.address +' for code. Current confirmations: '+ confirmations);
@@ -554,6 +560,7 @@ observeWallets = function(){
                         // TODO make smarter?
 
                         // Check if the code is still at the contract address, if not remove the wallet
+                        console.log('CLEMENT DEBUG try getCode 2 on ', newDocument.address);
                         web3.eth.getCode(newDocument.address, function(e, code){
                             if(!e) {
                                 if(code.length > 2) {
@@ -569,6 +576,9 @@ observeWallets = function(){
                     } else if(confirmations > ethereumConfig.requiredConfirmations) {
                         filter.stopWatching();
                     }
+                } else {
+                    console.log('CLEMENT DEBUG observeWallet filter ERROR:');
+                    console.log(e);
                 }
             });
         }
@@ -596,7 +606,7 @@ observeWallets = function(){
                     contracts['ct_'+ newDocument._id] = WalletContract.at();
 
                     // remove account, if something is searching since more than 30 blocks
-                    if(newDocument.creationBlock + 50 <= EthBlocks.latest.number)
+                    if(newDocument.creationBlock + 50 <= AITBlocks.latest.number)
                         Wallets.remove(newDocument._id);
                     else
                         setupContractFilters(newDocument);
@@ -631,14 +641,24 @@ observeWallets = function(){
                         });
 
                     } else {
-
                         console.log('Deploying Wallet with following options', newDocument);
-
+                        // replace the address from 'ai' to '0x' newDocument.owners is address array, newDocument.deployFrom is address
+/*
+                        var tmpDocument = newDocument;
+                        var owner_index = 0;
+                        tmpDocument.deployFrom = Helpers.fixAddrPrefix0X(tmpDocument.deployFrom);
+                        console.log('CLEMENT DEBUG WalletContract owner num= ', tmpDocument.owners.length);
+                        for(var owner_index=0;owner_index<tmpDocument.owners.length;owner_index++)
+								        {
+								            tmpDocument.owners[owner_index]=Helpers.fixAddrPrefix0X(tmpDocument.owners[owner_index]);
+								        }
+								        console.log('Processed options', tmpDocument);
+*/
                         WalletContract.new(newDocument.owners, newDocument.requiredSignatures, (newDocument.dailyLimit || ethereumConfig.dailyLimitDefault), {
                             from: newDocument.deployFrom,
                             data: newDocument.code,
                             gas: 3000000,
-
+                            
                         }, function(error, contract){
                             if(!error) {
 
@@ -662,8 +682,8 @@ observeWallets = function(){
 
                                     // add address to account
                                     Wallets.update(newDocument._id, {$set: {
-                                        creationBlock: EthBlocks.latest.number - 1,
-                                        checkpointBlock: EthBlocks.latest.number - 1,
+                                        creationBlock: AITBlocks.latest.number - 1,
+                                        checkpointBlock: AITBlocks.latest.number - 1,
                                         address: contract.address
                                     }, $unset: {
                                         code: ''
@@ -677,7 +697,7 @@ observeWallets = function(){
                                     setupContractFilters(newDocument);
 
                                     // Show backup note
-                                    EthElements.Modal.question({
+                                    AITElements.Modal.question({
                                         template: 'views_modals_backupContractAddress',
                                         data: {
                                             address: contract.address
@@ -779,7 +799,7 @@ observeWallets = function(){
 
             // delete the all tx and pending conf
             _.each(Transactions.find({from: newDocument.address}).fetch(), function(tx){
-                if(!Wallets.findOne({transactions: tx._id}) && !EthAccounts.findOne({transactions: tx._id}))
+                if(!Wallets.findOne({transactions: tx._id}) && !AITAccounts.findOne({transactions: tx._id}))
                     Transactions.remove(tx._id);
             });
             _.each(PendingConfirmations.find({from: newDocument.address}).fetch(), function(pc){

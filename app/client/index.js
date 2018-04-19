@@ -26,7 +26,7 @@ Meteor.startup(function() {
             } catch (err) {
                 console.warn('numeral.js couldn\'t set number formating: ', err.message);
             }
-            EthTools.setLocale(lang);
+            AITTools.setLocale(lang);
         }
 
         // If on the mainnet, this will add the unicorn token by default, only once.
@@ -35,7 +35,7 @@ Meteor.startup(function() {
 
             // wait 5s, to allow the tokens to be loaded from the localstorage first
             Meteor.setTimeout(function(){
-                var unicornToken = '0x89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7';
+                var unicornToken = 'ai89205a3a3b2a69de6dbf7f01ed13b2108b2c43e7';
                 tokenId = Helpers.makeId('token', unicornToken);
                 Tokens.upsert(tokenId, {$set: {
                     address: unicornToken,

@@ -27,12 +27,12 @@ var addLogWatching = function(newDocument){
     var filter = contractInstance.allEvents({fromBlock: blockToCheckBack, toBlock: 'latest'});
 
     // get past logs, to set the new blockNumber
-    var currentBlock = EthBlocks.latest.number;
+    var currentBlock = AITBlocks.latest.number;
     filter.get(function(error, logs) {
         if(!error) {
             // update last checkpoint block
             CustomContracts.update({_id: newDocument._id}, {$set: {
-                checkpointBlock: (currentBlock || EthBlocks.latest.number) - ethereumConfig.rollBackBy
+                checkpointBlock: (currentBlock || AITBlocks.latest.number) - ethereumConfig.rollBackBy
             }});
         }
     });
@@ -46,6 +46,10 @@ var addLogWatching = function(newDocument){
             } else {
 
                 _.each(log.args, function(value, key){
+                	  // CLEMENT EDIT it !!!!
+                	  if (value.substring(0, 2) === 'ai') {
+				                value = '0x'+ value.replace('ai','');
+				            }
                     // if bignumber
                     if((_.isObject(value) || value instanceof BigNumber) && value.toFormat) {
                         value = value.toString(10);
@@ -162,9 +166,15 @@ Template['views_account'].helpers({
     */
     'formattedTokenBalance': function(e){
         var account = Template.parentData(2);
-
+        var unit = this.symbol;
+        var aitUnit = unit;
+        if(unit === 'ether')
+            aitUnit = 'ait';
+        else
+        	  aitUnit = unit;
+        	  
         return (this.balances && Number(this.balances[account._id]) > 0)
-            ? Helpers.formatNumberByDecimals(this.balances[account._id], this.decimals) +' '+ this.symbol
+            ? Helpers.formatNumberByDecimals(this.balances[account._id], this.decimals) +' '+ aitUnit
             : false;
     },
     /**
@@ -173,7 +183,7 @@ Template['views_account'].helpers({
     @method (ownedAccount)
     */
     'ownedAccount': function(){
-        return EthAccounts.find({address: this.address.toLowerCase()}).count() > 0 ;
+        return AITAccounts.find({address: this.address.toLowerCase()}).count() > 0 ;
     },
     /**
     Gets the contract events if available
@@ -233,7 +243,7 @@ var accountClipboardEventHandler = function(e){
         copyAddress();
     }
     else {
-        EthElements.Modal.question({
+        AITElements.Modal.question({
             text: new Spacebars.SafeString(TAPi18n.__('wallet.accounts.modal.copyAddressWarning')),
             ok: function(){
                 Session.set('tmpAllowCopy', true);
@@ -255,7 +265,7 @@ Template['views_account'].events({
     'click button.delete': function(e, template){
         var data = this;
 
-        EthElements.Modal.question({
+        AITElements.Modal.question({
             text: new Spacebars.SafeString(TAPi18n.__('wallet.accounts.modal.deleteText') +
                 '<br><input type="text" class="deletionConfirmation" autofocus="true">'),
             ok: function(){
@@ -307,7 +317,7 @@ Template['views_account'].events({
             Wallets.update(this._id, {$set: {
                 name: text
             }});
-            EthAccounts.update(this._id, {$set: {
+            AITAccounts.update(this._id, {$set: {
                 name: text
             }});
             CustomContracts.update(this._id, {$set: {
@@ -341,7 +351,7 @@ Template['views_account'].events({
         e.preventDefault();
 
         // Open a modal showing the QR Code
-        EthElements.Modal.show({
+        AITElements.Modal.show({
             template: 'views_modals_qrCode',
             data: {
                 address: this.address
@@ -364,7 +374,7 @@ Template['views_account'].events({
         })
 
         // Open a modal showing the QR Code
-        EthElements.Modal.show({
+        AITElements.Modal.show({
             template: 'views_modals_interface',
             data: {
                 jsonInterface: cleanJsonInterface

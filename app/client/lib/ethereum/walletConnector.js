@@ -57,20 +57,21 @@ Connects to a node and setup all the filters for the accounts.
 connectToNode = function(){
 
     console.time('startNode')
-    console.log('Connect to node...');
+    console.log('CLEMENT DEBUG Connect to node...');
 
-    EthAccounts.init();
-    EthBlocks.init();
-    EthTools.ticker.start({
-      extraParams: (typeof mist !== 'undefined') ? 'Mist-'+ mist.version : '',
-      currencies: ['BTC', 'USD', 'EUR', 'BRL', 'GBP']
-    });
+    AITAccounts.init();
+    
+    console.log('CLEMENT DEBUG AITAccounts.init(); Done...');
+    
+    AITBlocks.init();
 
-    if (EthAccounts.find().count() > 0) {
+    console.log('CLEMENT DEBUG get eth accounts...');
+    
+    if (AITAccounts.find().count() > 0) {
         checkForOriginalWallet();
     }
 
-    // EthBlocks.detectFork(function(oldBlock, block){
+    // AITBlocks.detectFork(function(oldBlock, block){
     //     console.log('FORK detected from Block #'+ oldBlock.number + ' -> #'+ block.number +', rolling back!');
 
     //     // Go through all accounts and re-run
@@ -83,21 +84,27 @@ connectToNode = function(){
     //     });
     // });
 
-
-    observeLatestBlocks();
-
+    console.log('CLEMENT DEBUG do observeWallets...');
     observeWallets();
-
+    
+    console.log('CLEMENT DEBUG do observeTransactions...');
     observeTransactions();
 
+    observeLatestBlocks();
+    
+    console.log('CLEMENT DEBUG do observeEvents...');
     observeEvents();
 
+    console.log('CLEMENT DEBUG do observeTokens...');
     observeTokens();
 
+    console.log('CLEMENT DEBUG do observePendingConfirmations...');
     observePendingConfirmations();
 
+    console.log('CLEMENT DEBUG do observeCustomContracts...');
     observeCustomContracts();
 
+    console.log('CLEMENT DEBUG start NODE DONE!');
     console.timeEnd('startNode')
 };
 

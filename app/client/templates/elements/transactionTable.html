@@ -58,7 +58,7 @@
                     {{#each owners}}
                         <div data-tooltip="{{accountNameOrAddress this}}" class="simptip-position-bottom simptip-movable">
                             {{#if ownerIsConfirmed}}<i class="icon-check"></i>{{/if}}
-                            {{> dapp_identicon identity=this class="dapp-tiny"}}
+                            {{> dapp_identiconAIT identity=this class="dapp-tiny"}}
                         </div>
                     {{/each}}
                     <span>{{ownerConfirmationCount}}</span>
@@ -74,7 +74,7 @@
         </td>
         {{#if outOfGas}}
             <td class="transaction-amount minus">
-                -{{dapp_formatBalance fee '0,0.00[000] UNIT'}}
+                -{{formatBalanceWithUnit fee '0,0.00[000]'}}
             </td>
             <td>
                 <i class="icon-shield minus"></i>

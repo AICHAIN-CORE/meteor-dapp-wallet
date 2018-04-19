@@ -31,8 +31,8 @@ Template['views_modals_eventInfo'].helpers({
     @return {Number} the number of confirmations
     */
     'confirmations': function(){
-        return (EthBlocks.latest && this.blockNumber)
-            ? EthBlocks.latest.number + 1 - this.blockNumber : 0;
+        return (AITBlocks.latest && this.blockNumber)
+            ? AITBlocks.latest.number + 1 - this.blockNumber : 0;
     },
     /**
     Event return values

@@ -23,7 +23,7 @@
             "texts": {
                 "note": "Примечание",
                 "balance": "Баланс",
-                "connectionErrorMist": "Подключение не получилось. Пожалуйста запустите geth используя:<br><br><small><code>__node__</code><br><br>Убедитесь, что установлен правильный путь IPC по умолчанию, если вы используете особый <code>datadir</code>, например<br><code>geth --datadir ... --ipcpath /Users/&lt;yourUser&gt;/Library/Ethereum/geth.ipc</code><br>or<br><code>geth --datadir ... --ipcpath /Users/&lt;yourUser&gt;/.ethereum/geth.ipc</code>. <br><br>Можно добавить: <code>--unlock &lt;yourAccount&gt;.</code></small>",
+                "connectionErrorMist": "Подключение не получилось. Пожалуйста запустите geth используя:<br><br><small><code>__node__</code><br><br>Убедитесь, что установлен правильный путь IPC по умолчанию, если вы используете особый <code>datadir</code>, например<br><code>gait --datadir ... --ipcpath /Users/&lt;yourUser&gt;/Library/AICHAIN/gait.ipc</code><br>or<br><code>geth --datadir ... --ipcpath /Users/&lt;yourUser&gt;/.AICHAIN/gait.ipc</code>. <br><br>Можно добавить: <code>--unlock &lt;yourAccount&gt;.</code></small>",
                 "connectionErrorBrowser": "Подключение не получилось. Попробуйте запустить geth с такими параметрами:<br><br><small><code>__node__</code><br><br>Можно добавить: <code>--unlock &lt;yourAccount&gt;.</code></small>",
                 "pendingConfirmationsBadge": "Ожидаем подтверждения!",
                 "nodeSyncing": "осталось __blockDiff__ блоков",
@@ -37,7 +37,7 @@
                 }
             },
             "error": {
-                "wrongChain": "Кажется вы не в той цепочке, перезапустите Ethereum Wallet App!"
+                "wrongChain": "Кажется вы не в той цепочке, перезапустите AICHAIN Wallet App!"
             },
             "warnings": {
                 "txOriginVulnerabilityWallet": "Этот умный контракт кошелек имеет устаревший код и подлежит фишинга.",
@@ -277,7 +277,7 @@
             "title": "Собственные <strong>Жетоны</strong>",
             "subTitle": "Добавить жетоны",
             "admin": "__name__ (страница администратора)",
-            "description": "Жетоны — это валюты и другие ценные бумаги построенные на платформе Эфириум. Для того чтобы видеть жетоны определенного типа, вы должны добавить их адрес в список. Вы можете создать свой личный тип жетонов слегка модифицировав <a href=\"https://ethereum.org/token#the-code\" target=\"_blank\">этот пример простого контракта</a> или детально изучив <a href=\"https://www.ethereum.org/token\" target=\"_blank\">Жетоны Эфириума</a>.",
+            "description": "Жетоны — это валюты и другие ценные бумаги построенные на платформе Эфириум. Для того чтобы видеть жетоны определенного типа, вы должны добавить их адрес в список. Вы можете создать свой личный тип жетонов слегка модифицировав <a href=\"https://aichain.me/token#the-code\" target=\"_blank\">этот пример простого контракта</a> или детально изучив <a href=\"https://www.aichain.me/token\" target=\"_blank\">Жетоны Эфириума</a>.",
             "deleteToken": "Вы действительно хотите удалить жетон <strong>__token__</strong> из вашего списка?",
             "addedToken": "Добавить __token__ в ваш список жетонов",
             "editedToken": "Редактировать жетон __token__",
@@ -305,7 +305,7 @@
             "writeToContract": "Писать в контракт",
             "pickContract": "Выбрать контракт",
             "pickFunction": "Выбрать функцию",
-            "noContract": "<p>Вставьте код контракта сюда. Вы можете найти много примеров контрактов на <a href=\"http://ethereum.org\" target=\"_blank\">ethereum.org</a>: </p> <ul><li><a href=\"http://ethereum.org/token\" target=\"_blank\">Создать жетон</a></li><li><a href=\"http://ethereum.org/crowdsale\" target=\"_blank\">Начать краудсэйл</a></li><li><a href=\"http://ethereum.org/dao\" target=\"_blank\">Создать блокчейн организацию</a></li></ul>",
+            "noContract": "<p>Вставьте код контракта сюда. Вы можете найти много примеров контрактов на <a href=\"http://aichain.me\" target=\"_blank\">aichain.me</a>: </p> <ul><li><a href=\"http://aichain.me/token\" target=\"_blank\">Создать жетон</a></li><li><a href=\"http://aichain.me/crowdsale\" target=\"_blank\">Начать краудсэйл</a></li><li><a href=\"http://aichain.me/dao\" target=\"_blank\">Создать блокчейн организацию</a></li></ul>",
             "buttons": {
                 "showContractInfo": "Показать информацию о контракте",
                 "hideContractInfo": "Спрятать информацию контракта",
