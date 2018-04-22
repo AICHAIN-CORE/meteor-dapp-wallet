@@ -642,18 +642,6 @@ observeWallets = function(){
 
                     } else {
                         console.log('Deploying Wallet with following options', newDocument);
-                        // replace the address from 'ai' to '0x' newDocument.owners is address array, newDocument.deployFrom is address
-/*
-                        var tmpDocument = newDocument;
-                        var owner_index = 0;
-                        tmpDocument.deployFrom = Helpers.fixAddrPrefix0X(tmpDocument.deployFrom);
-                        console.log('CLEMENT DEBUG WalletContract owner num= ', tmpDocument.owners.length);
-                        for(var owner_index=0;owner_index<tmpDocument.owners.length;owner_index++)
-								        {
-								            tmpDocument.owners[owner_index]=Helpers.fixAddrPrefix0X(tmpDocument.owners[owner_index]);
-								        }
-								        console.log('Processed options', tmpDocument);
-*/
                         WalletContract.new(newDocument.owners, newDocument.requiredSignatures, (newDocument.dailyLimit || ethereumConfig.dailyLimitDefault), {
                             from: newDocument.deployFrom,
                             data: newDocument.code,

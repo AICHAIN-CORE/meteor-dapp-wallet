@@ -419,7 +419,14 @@ Helpers.addInputValue = function (inputs, currentInput, formField){
                    (input.typeShort === 'bytes' ||
                     input.typeShort === 'address')) {
                     // If it looks like hex, then add 0x before
-                    value = /^[0-9a-f]+$/i.test(formField.value.replace('0x','')) ? '0x'+ formField.value.replace('0x','') : null;
+                    
+                    if(input.typeShort === 'bytes') {
+                        value = /^[0-9a-f]+$/i.test(formField.value.replace('0x','')) ? '0x'+ formField.value.replace('0x','') : null;
+                    } else if(input.typeShort === 'address') {
+                    	  var address = formField.value.replace('ai','');
+                    	  address = address.replace('0x','');
+                        value = /^[0-9a-f]+$/i.test(address) ? 'ai'+ address : null;
+                    }
 
                 // bool
                 } else if(input.typeShort === 'bool') {

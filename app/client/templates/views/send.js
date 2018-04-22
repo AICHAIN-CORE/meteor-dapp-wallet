@@ -563,28 +563,29 @@ Template['views_send'].events({
                     duration: 2
                 });
 
-            if(!web3.isAddress(to) && !data)
+            if(!web3.isAddress(to) && !data) {
                 return GlobalNotification.warning({
                     content: 'i18n:wallet.send.error.noReceiver',
                     duration: 2
                 });
+            }
 
             if(tokenAddress === 'ether') {
-
-                if((_.isEmpty(amount) || amount === '0' || !_.isFinite(amount)) && !data)
+                if((_.isEmpty(amount) || amount === '0' || !_.isFinite(amount)) && !data) {
                     return GlobalNotification.warning({
                         content: 'i18n:wallet.send.error.noAmount',
                         duration: 2
                     });
+                }
 
-                if(new BigNumber(amount, 10).gt(new BigNumber(selectedAccount.balance, 10)))
+                if(new BigNumber(amount, 10).gt(new BigNumber(selectedAccount.balance, 10))) {
                     return GlobalNotification.warning({
                         content: 'i18n:wallet.send.error.notEnoughFunds',
                         duration: 2
                     });
+                }
 
             } else { // Token transfer
-
                 if(!to) {
                     return GlobalNotification.warning({
                         content: 'i18n:wallet.send.error.noReceiver',

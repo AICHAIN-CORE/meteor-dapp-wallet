@@ -113,7 +113,6 @@ var formatOutput = function(val) {
     if(_.isArray(val))
         return _.map(val, formatOutput);
     else {
-
         // stringify boolean
         if(_.isBoolean(val))
             val = val ? 'YES' : 'NO';
