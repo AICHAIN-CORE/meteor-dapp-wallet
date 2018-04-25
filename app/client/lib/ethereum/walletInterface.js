@@ -34,7 +34,7 @@ web3.eth.getBlock(0, function(e, res){
     if(!e){
     	  console.log('CLEMENT DEBUG CHECK network=:', res.hash);
         switch(res.hash) {
-            case '0xd546524766262ad16ad67ecdc87ed872e782b58fc9a97ecbf63637b9f279eed8':
+            case '0xe84b73a13a6647523d131dcd385ac6ad49620e45775baaafbddfa8a7a9120dbe':
                 Session.set('network', 'main');
                 console.log('CLEMENT DEBUG detect main network');
                 break;
