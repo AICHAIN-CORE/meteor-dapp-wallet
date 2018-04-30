@@ -5,16 +5,12 @@
             {{#if $eq ($.Session.get "network") "main"}} 
                 <a href="http://scan.aichain.me/tx/{{transactionHash}}" target="_blank" style="font-size: 0.4em;">{{transactionHash}}</a>
             {{else}}
-                {{#if $eq ($.Session.get "network") "rinkeby"}}
-                    <a href="http://scan.aichain.me/tx/{{transactionHash}}" target="_blank" style="font-size: 0.4em;">{{transactionHash}}</a>
-                {{else}}
-                    {{#if $eq ($.Session.get "network") "ropsten"}}
-                        <a href="http://scan.aichain.me/tx/{{transactionHash}}" target="_blank" style="font-size: 0.4em;">{{transactionHash}}</a>
+                {{#if $eq ($.Session.get "network") "testnet"}}
+                    <a href="http://testnetscan.aichain.me/tx/{{transactionHash}}" target="_blank" style="font-size: 0.4em;">{{transactionHash}}</a>
                     {{else}}
                         <span style="font-size: 0.4em;">{{transactionHash}}</span>
                     {{/if}}
                 {{/if}}
-            {{/if}}
 
         </h1>
 
@@ -90,7 +86,7 @@
                                 {{blockHash.substr 0 40}}...
                             </a>
                             {{else}}
-                                {{#if $eq ($.Session.get "network") "test"}}
+                                {{#if $eq ($.Session.get "network") "testnet"}}
                                 <a href="http://scan.aichain.me/block/{{blockHash}}" title="{{blockHash}}" target="_blank" class="dapp-shorten-text">
                                     {{blockNumber}}
                                     <br>

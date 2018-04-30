@@ -38,13 +38,9 @@ web3.eth.getBlock(0, function(e, res){
                 Session.set('network', 'main');
                 console.log('CLEMENT DEBUG detect main network');
                 break;
-            case '0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177':
-                Session.set('network', 'rinkeby');
-                console.log('CLEMENT DEBUG detect rinkeby network');
-                break;
-            case '0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d':
-                Session.set('network', 'ropsten');
-                console.log('CLEMENT DEBUG detect ropsten network');
+            case '0xec9843a91b5d966b29de086343b70fa87e575e1839c9075234bc2ea6b2eef8c7':
+                Session.set('network', 'testnet');
+                console.log('CLEMENT DEBUG detect testnet network');
                 break;
             default:
                 console.log('CLEMENT DEBUG detect private network');
