@@ -7,10 +7,10 @@
             {{else}}
                 {{#if $eq ($.Session.get "network") "testnet"}}
                     <a href="http://testnetscan.aichain.me/tx/{{transactionHash}}" target="_blank" style="font-size: 0.4em;">{{transactionHash}}</a>
-                    {{else}}
-                        <span style="font-size: 0.4em;">{{transactionHash}}</span>
-                    {{/if}}
+                {{else}}
+                    <span style="font-size: 0.4em;">{{transactionHash}}</span>
                 {{/if}}
+            {{/if}}
 
         </h1>
 

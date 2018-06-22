@@ -34,14 +34,11 @@ AITAccounts._watchBalance = function(){
     }
 
     // UPDATE SIMPLE ACCOUNTS balance on each new block
-    console.log('CLEMENT DEBUG AITAccounts._watchBalance setup filter...');
     this.blockSubscription = web3.eth.filter('latest');
     this.blockSubscription.watch(function(e, res){
         if(!e) {
-        	  console.log('CLEMENT DEBUG AITAccounts._watchBalance get a new block...');
             _this._updateBalance();
         } else {
-                    console.log('CLEMENT DEBUG AITAccounts._watchBalance filter ERROR:');
                     console.log(e);
                 }
     });
@@ -49,7 +46,6 @@ AITAccounts._watchBalance = function(){
 
 AITAccounts._watchBalanceForOutCall = function(){
     var _this = this;
-    console.log('CLEMENT DEBUG AITAccounts._watchBalance get a new block...');
     _this._updateBalance();
 };
 /**
@@ -279,7 +275,6 @@ Starts fetching and watching the accounts
 */
 AITAccounts.init = function() {
     var _this = this;
-    console.log('CLEMENT DEBUG : start AITAccounts ');
     if(typeof web3 === 'undefined') {
         console.warn('AITAccounts couldn\'t find web3, please make sure to instantiate a web3 object before calling AITAccounts.init()');
         return;

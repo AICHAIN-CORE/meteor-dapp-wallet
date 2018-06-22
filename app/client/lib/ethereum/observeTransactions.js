@@ -15,9 +15,6 @@ addTransactionAfterSend = function(txHash, amount, from, to, gasPrice, estimated
         data = data.data;
     }
 
-    console.log('CLEMENT DEBUG usert tx=', txHash);
-    console.log('CLEMENT DEBUG from=', from);
-    console.log('CLEMENT DEBUG to=', to);
     Transactions.upsert(txId, {$set: {
         tokenId: tokenId,
         value: amount,
@@ -33,7 +30,6 @@ addTransactionAfterSend = function(txHash, amount, from, to, gasPrice, estimated
         contractName: contractName
     }});
 
-    console.log('CLEMENT DEBUG add txid to account=', txId);
     // add from Account
     AITAccounts.update({address: from}, {$addToSet: {
         transactions: txId
@@ -59,11 +55,10 @@ Add new in/outgoing transaction
 */
 addTransaction = function(log, from, to, value){
     var txId = Helpers.makeId('tx', log.transactionHash);
-
-    console.log('CLEMENT DEBUG addTransaction txId=', txId);
     
     // add the tx already here
     Transactions.upsert(txId, {
+        tokenId: log.tokenId,
         to: to,
         from: from,
         value: value
@@ -71,12 +66,11 @@ addTransaction = function(log, from, to, value){
 
     var block = web3.eth.getBlock(log.blockNumber, false, function(err, block){
         if(!err) {
-
             web3.eth.getTransaction(log.transactionHash, function(err, transaction) {
                 if(!err && transaction) {
                     web3.eth.getTransactionReceipt(log.transactionHash, function(err, receipt){
 
-                        delete transaction.hash;
+                        // delete transaction.hash;
                         transaction.transactionHash = log.transactionHash;
 
                         var tx = {
@@ -84,16 +78,14 @@ addTransaction = function(log, from, to, value){
                             timestamp: block.timestamp,
                         };
 
-                        if(log.tokenId)
+                        if(log.tokenId) {
                             tx.tokenId = log.tokenId;
-
+                        }
                         if(log.args.operation)
                             tx.operation = log.args.operation;
 
                         if(!err) {
-                        	  console.log('CLEMENT DEBUG addTransaction updateTransaction txId=', txId);
                             updateTransaction(tx, transaction, receipt);
-
                         }
                     });
                 }
@@ -125,7 +117,7 @@ var updateTransaction = function(newDocument, transaction, receipt){
     // if no tx was found, means it was never created, or removed, through log.removed: true
     if(!oldTx)
         return;
-
+    
     newDocument._id = id;
 
     if(transaction) {
@@ -144,6 +136,7 @@ var updateTransaction = function(newDocument, transaction, receipt){
 
     if(receipt && transaction) {
 
+        console.log("newDocument.contractAddress: ",newDocument.contractAddress);
         // check for code on the address
         if(!newDocument.contractAddress && receipt.contractAddress) {
             web3.eth.getCode(receipt.contractAddress, function(e, code) {
@@ -223,9 +216,16 @@ var updateTransaction = function(newDocument, transaction, receipt){
             newDocument.from = oldTx.from;
             newDocument.to = oldTx.to;
             newDocument.value = oldTx.value;
+        } 
+
+        if(!oldTx.tokenId && newDocument.tokenId) {
+            delete newDocument.from;
+            delete newDocument.to;
+            delete newDocument.value;
         }
 
         delete newDocument._id;
+
         Transactions.update({_id: id}, {$set: newDocument});
     }
 
@@ -261,15 +261,12 @@ var updateTransaction = function(newDocument, transaction, receipt){
 
 checkTXConfirmations = function() {
 	  var confCount = 0;
-    console.log('checkTXConfirmations start ...');
     _.each(TransactionsNeedConfirmed.find().fetch(), function(tx) {
         try {
-        	    console.log('checkTXConfirmations tx has: ', tx.transactionHash);
         	    confCount = tx.confCount;
         	    
               if(!tx.confirmed && tx.transactionHash) {
             	{
-                    var confirmations = (tx.blockNumber && AITBlocks.latest.number) ? (AITBlocks.latest.number + 1) - tx.blockNumber : 0;
                     confCount++;
                     
                     TransactionsNeedConfirmed.upsert(tx._id, {$set: {
@@ -279,24 +276,43 @@ checkTXConfirmations = function() {
                     // get the latest tx data
                     tx = Transactions.findOne(tx._id);
 
+                    // NEW ADDED BY CLEMENT 2018 6.19
+                    // must use tx.blockNumber after call : tx = Transactions.findOne(tx._id);
+                    // because TransactionsNeedConfirmed tx has no blockNumber member
+                    var confirmations = (tx.blockNumber && AITBlocks.latest.number) ? (AITBlocks.latest.number + 1) - tx.blockNumber : 0;
+
                     // stop if tx was removed
                     if(!tx) {
                     	  TransactionsNeedConfirmed.remove(tx._id);
                         return;
                     }
 
+                    // NEW ADDED BY CLEMENT 2018 6.19
+                    // maybe some tx are left in the history, need remove those tx, which has already been confirmed.
+                    if(tx.confirmed) {
+                        TransactionsNeedConfirmed.remove(tx._id);
+                      return;
+                    }
+
                     if(confirmations < ethereumConfig.requiredConfirmations && confirmations >= 0) {
-                        Helpers.eventLogs('Checking transaction '+ tx.transactionHash +'. Current confirmations: '+ confirmations);
-
-
                         // Check if the tx still exists, if not disable the tx
                         web3.eth.getTransaction(tx.transactionHash, function(e, transaction){
+                            if(e) {
+                                Helpers.eventLogs('getTransaction ' + tx.transactionHash + ' error: '+ e);
+                                return;
+                            }
+
                             web3.eth.getTransactionReceipt(tx.transactionHash, function(e, receipt){
-                                if(e || !receipt || !transaction) return;
+                                if(e || !receipt || !transaction) {
+                                    Helpers.eventLogs('getTransactionReceipt error: '+ e);
+                                    return;
+                                }
 
                                 // update with receipt
-                                if(transaction.blockNumber !== tx.blockNumber)
+                                if(transaction.blockNumber !== tx.blockNumber) {
+                                    Helpers.eventLogs('updateTransaction receipt: ' + receipt);
                                     updateTransaction(tx, transaction, receipt);
+                                }
 
                                 // enable transaction, if it was disabled
                                 else if(transaction.blockNumber && tx.disabled)
@@ -344,6 +360,8 @@ checkTXConfirmations = function() {
                                                     tx.confirmed = true;
                                                     updateTransaction(tx, transaction, receipt);
 
+                                                    TransactionsNeedConfirmed.remove(tx._id);   // NEW ADDED BY CLEMENT 2018 6.19
+
                                                     // remove disabled
                                                     if(tx.disabled)
                                                         Transactions.update(tx._id, {$unset:{
@@ -374,8 +392,6 @@ checkTXConfirmations = function() {
 
 var addTransactionNeedConfirmed = function(tx){
     // check for confirmations
-    console.log('CLEMENT DEBUG add need confirmed tx=', tx.transactionHash);
-    
     TransactionsNeedConfirmed.upsert(tx._id, {$set: {
         transactionHash: tx.transactionHash,
         confirmed: tx.confirmed,
@@ -417,14 +433,13 @@ observeTransactions = function(){
 
                     // stop if tx was removed
                     if(!tx) {
-                    	  console.log('CLEMENT DEBUG filter stop watch 2');
                         filter.stopWatching();
                         return;
                     }
 
 
                     if(confirmations < ethereumConfig.requiredConfirmations && confirmations >= 0) {
-                        Helpers.eventLogs('Checking transaction '+ tx.transactionHash +'. Current confirmations: '+ confirmations);
+                        //Helpers.eventLogs('2 Checking transaction '+ tx.transactionHash +'. Current confirmations: '+ confirmations);
 
 
                         // Check if the tx still exists, if not disable the tx
@@ -470,8 +485,8 @@ observeTransactions = function(){
                                         });
 
                                         Transactions.remove(tx._id);
+                                        TransactionsNeedConfirmed.remove(tx._id);   // NEW ADDED BY CLEMENT 2018 6.19
                                         filter.stopWatching();
-                                        console.log('CLEMENT DEBUG filter stop watch 3');
 
                                     } else if(transaction.blockNumber) {
 
@@ -494,10 +509,10 @@ observeTransactions = function(){
                                                 // remove if the parent block is not in the chain anymore.
                                                 } else {
                                                     Transactions.remove(tx._id);
+                                                    TransactionsNeedConfirmed.remove(tx._id); // NEW ADDED BY CLEMENT 2018 6.19 
                                                 }
 
                                                 filter.stopWatching();
-                                                console.log('CLEMENT DEBUG filter stop watch 1');
                                             }
                                         });
 
@@ -509,12 +524,9 @@ observeTransactions = function(){
                 }
             };
 
-            console.log('CLEMENT DEBUG added watch on tx=', tx.transactionHash);
             var filter = web3.eth.filter('latest').watch(function(e, blockHash) {
-            	  console.log('CLEMENT DEBUG observeTransaction get new blockHash=', blockHash);
                 updateTransactions(e, blockHash);
             });
-            console.log('CLEMENT DEBUG filter transaction added DONE!');
         }
     };
 
@@ -532,7 +544,6 @@ observeTransactions = function(){
         */
         added: function(newDocument) {
             var confirmations = AITBlocks.latest.number - newDocument.blockNumber;
-            console.log('CLEMENT DEBUG added a tx=', newDocument.transactionHash);
 
             // add to accounts
             Wallets.update({address: newDocument.from}, {$addToSet: {
@@ -544,14 +555,12 @@ observeTransactions = function(){
 
             // remove pending confirmations, if present
             if(newDocument.operation) {
-            	  console.log('CLEMENT DEBUG added pc=', Helpers.makeId('pc', newDocument.operation));
                 checkConfirmation(Helpers.makeId('pc', newDocument.operation));
             }
 
 
             // check first if the transaction was already mined
             if(!newDocument.confirmed) {
-            	  // console.log('CLEMENT DEBUG add watch on tx=', newDocument.transactionHash);
                 // checkTransactionConfirmations(newDocument);
                 addTransactionNeedConfirmed(newDocument);
             }
@@ -603,7 +612,6 @@ observeTransactions = function(){
         @method changed
         */
         changed: function(newDocument){
-        	  console.log('CLEMENT DEBUG changed a tx=', newDocument.transactionHash);
             // add to accounts
             Wallets.update({address: newDocument.from}, {$addToSet: {
                 transactions: newDocument._id
@@ -614,7 +622,6 @@ observeTransactions = function(){
 
             // remove pending confirmations, if present
             if(newDocument.operation) {
-            	  console.log('CLEMENT DEBUG changed pc=', Helpers.makeId('pc', newDocument.operation));
                 checkConfirmation(Helpers.makeId('pc', newDocument.operation));
             }
         },
@@ -624,7 +631,6 @@ observeTransactions = function(){
         @method removed
         */
         removed: function(document) {
-        	  console.log('CLEMENT DEBUG removed a tx=', document.transactionHash);
             Wallets.update({address: document.from}, {$pull: {
                 transactions: document._id
             }});

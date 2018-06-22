@@ -4,8 +4,6 @@ Check if a pending confirmation is still pending
 @method checkConfirmation
 */
 checkConfirmation = function(confirmationId){
-	  console.log('CLEMENT DEBUG checkConfirmation confirmationId=', confirmationId);
-	  
     var conf = PendingConfirmations.findOne(confirmationId);
     if(!conf) return;
 

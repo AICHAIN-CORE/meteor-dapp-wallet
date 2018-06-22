@@ -32,22 +32,21 @@ contractVersions = [
 // CHECK FOR NETWORK
 web3.eth.getBlock(0, function(e, res){
     if(!e){
-    	  console.log('CLEMENT DEBUG CHECK network=:', res.hash);
         switch(res.hash) {
             case '0x84ba29088566df091e2e7214ca338b4c6f7fda8a52c0454fd134b0e485da1d3a':
                 Session.set('network', 'main');
-                console.log('CLEMENT DEBUG detect main network');
+                console.log('detect main network');
                 break;
             case '0xec9843a91b5d966b29de086343b70fa87e575e1839c9075234bc2ea6b2eef8c7':
                 Session.set('network', 'testnet');
-                console.log('CLEMENT DEBUG detect testnet network');
+                console.log('detect testnet network');
                 break;
             default:
-                console.log('CLEMENT DEBUG detect private network');
+                console.log('detect private network');
                 Session.set('network', 'private');
         }
     } else {
-    	  console.log('CLEMENT DEBUG CHECK network failed!');
+    	  console.log('CHECK network failed!');
     }
 });
 
@@ -211,13 +210,11 @@ checkWalletOwners = function(address) {
 
         if(web3.isAddress(address)) {
             address = address.toLowerCase();
-            console.log('CLEMENT DEBUG WalletContract.at(address) = ', address);
             var myContract = WalletContract.at(address);
 
             myContract.m_numOwners(function(e, numberOfOwners){
                 if(!e) {
                     numberOfOwners = numberOfOwners.toNumber();
-                    console.log('CLEMENT DEBUG WalletContract owner num= ', numberOfOwners);
                     
                     if(numberOfOwners > 0) {
                         var owners = [];
@@ -227,7 +224,6 @@ checkWalletOwners = function(address) {
                             return new P(function (resolve, reject) {
                                 web3.eth.getStorageAt(address, 2+i, function(e, ownerAddress){
                                     if(!e) {
-                                    	  console.log('CLEMENT DEBUG ownerAddress = ', ownerAddress);
                                         ownerAddress = ownerAddress.replace('0x000000000000000000000000','0x');
                                         
                                         if(owners.length > numberOfOwners)
@@ -273,7 +269,6 @@ checkWalletOwners = function(address) {
                     }
 
                 } else {
-                	  console.log('CLEMENT DEBUG WalletContract owner number ERROR!');
                     reject(e);
                 }
             })

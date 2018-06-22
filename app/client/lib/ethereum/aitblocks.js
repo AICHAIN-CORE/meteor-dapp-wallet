@@ -50,8 +50,6 @@ Start looking for new blocks
 @method init
 */
 AITBlocks.init = function(){
-	  console.log('CLEMENT DEBUG : start AITBlocks ');
-	  
     if(typeof web3 === 'undefined') {
         console.warn('AITBlocks couldn\'t find web3, please make sure to instantiate a web3 object before calling AITBlocks.init()');
         return;
@@ -132,7 +130,6 @@ function observeLatestBlocks(){
     });
 
     // GET the latest blockchain information
-    console.log('CLEMENT DEBUG AITblocks setup filter...');
     filter = web3.eth.filter('latest').watch(checkLatestBlocks);
 
 };
@@ -144,7 +141,6 @@ The observeLatestBlocks callback used in the block filter.
 */
 var checkLatestBlocks = function(e, hash){
     if(!e) {
-    	  console.log('CLEMENT DEBUG AITblocks get a new block...');
     	  AITAccounts._watchBalanceForOutCall();
     	  
         web3.eth.getBlock(hash, function(e, block){
@@ -184,7 +180,6 @@ var checkLatestBlocks = function(e, hash){
     // try to re-create the filter on error
     // TODO: want to do this?
     } else {
-    	  console.log('CLEMENT DEBUG AITblocks get ERROR on new block...');
         console.log(e);
 
         filter.stopWatching();

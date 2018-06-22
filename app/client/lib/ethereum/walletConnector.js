@@ -57,16 +57,8 @@ Connects to a node and setup all the filters for the accounts.
 connectToNode = function(){
 
     console.time('startNode')
-    console.log('CLEMENT DEBUG Connect to node...');
-
     AITAccounts.init();
-    
-    console.log('CLEMENT DEBUG AITAccounts.init(); Done...');
-    
     AITBlocks.init();
-
-    console.log('CLEMENT DEBUG get eth accounts...');
-    
     if (AITAccounts.find().count() > 0) {
         checkForOriginalWallet();
     }
@@ -84,27 +76,20 @@ connectToNode = function(){
     //     });
     // });
 
-    console.log('CLEMENT DEBUG do observeWallets...');
     observeWallets();
     
-    console.log('CLEMENT DEBUG do observeTransactions...');
     observeTransactions();
 
     observeLatestBlocks();
     
-    console.log('CLEMENT DEBUG do observeEvents...');
     observeEvents();
 
-    console.log('CLEMENT DEBUG do observeTokens...');
     observeTokens();
 
-    console.log('CLEMENT DEBUG do observePendingConfirmations...');
     observePendingConfirmations();
 
-    console.log('CLEMENT DEBUG do observeCustomContracts...');
     observeCustomContracts();
 
-    console.log('CLEMENT DEBUG start NODE DONE!');
     console.timeEnd('startNode')
 };
 
@@ -118,6 +103,7 @@ resetWallet = function function_name (argument) {
         console.log(tx._id);
         try {
             Transactions.remove(tx._id);
+            TransactionsNeedConfirmed.remove(tx._id); // NEW ADDED BY CLEMENT 2018 6.19
         } catch(e){
             console.error(e);
         }

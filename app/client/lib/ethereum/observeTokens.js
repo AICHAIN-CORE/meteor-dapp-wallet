@@ -12,14 +12,15 @@ Creates filters for a wallet contract, to watch for deposits, pending confirmati
 var setupContractFilters = function(newDocument){
     var contractInstance = tokenContracts['ct_'+ newDocument._id] = TokenContract.at(newDocument.address);
 
-    if(!contractInstance)
+    if(!contractInstance) {
+        Helpers.eventLogs('Checking Token Transfers ERROR on '+ newDocument.address);
         return;
-
+    }
     var blockToCheckBack = (newDocument.checkpointBlock || 0) - ethereumConfig.rollBackBy;
 
     // TODO change to 0, when new geth is out!!!!!
-    if(blockToCheckBack < 400000)
-        blockToCheckBack = 400000;
+    if(blockToCheckBack < 0)
+        blockToCheckBack = 0;
 
     if(!contractInstance.tokenEvents)
         contractInstance.tokenEvents = [];
@@ -33,8 +34,7 @@ var setupContractFilters = function(newDocument){
     });
 
     // SETUP FILTERS
-    // Helpers.eventLogs('Checking Token Transfers for '+ contractInstance.address +' (_id: '+ newDocument._id +') from block #', blockToCheckBack);
-
+    //Helpers.eventLogs('Checking Token Transfers for '+ contractInstance.address +' (_id: '+ newDocument._id +') from block #', blockToCheckBack);
 
     var filter = contractInstance.allEvents({fromBlock: blockToCheckBack, toBlock: 'latest'});
     events.push(filter);
@@ -52,8 +52,6 @@ var setupContractFilters = function(newDocument){
 
     filter.watch(function(error, log){
         if(!error) {
-            // Helpers.eventLogs(log);
-
             if(AITBlocks.latest.number && log.blockNumber > AITBlocks.latest.number) {
                 // update last checkpoint block
                 Tokens.update({_id: newDocument._id}, {$set: {
@@ -122,7 +120,6 @@ observeTokens = function(){
         added: function(newDocument) {
 
             // check if wallet has code
-            console.log('CLEMENT DEBUG try getCode on ', newDocument.address);
             web3.eth.getCode(newDocument.address, function(e, code) {
                 if(!e) {
                     if(code && code.length > 2){

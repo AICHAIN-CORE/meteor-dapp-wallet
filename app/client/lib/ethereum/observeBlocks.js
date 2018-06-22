@@ -132,7 +132,6 @@ Observe the latest blocks
 @method observeLatestBlocks
 */
 observeLatestBlocks = function(){
-    console.log('CLEMENT DEBUG do observeLatestBlocks...');
     // update balances on start
     updateBalances();
 
@@ -141,7 +140,6 @@ observeLatestBlocks = function(){
         if(!e) {
             updateBalances();
         } else {
-            console.log('CLEMENT DEBUG observeLatestBlocks filter ERROR:');
             console.log(e);
             
             filter_block.stopWatching();
@@ -149,7 +147,6 @@ observeLatestBlocks = function(){
         }
     });
 
-    console.log('CLEMENT DEBUG set get peer timer...');
     // check peer count
     Session.setDefault('peerCount', 0);
     getPeerCount();
