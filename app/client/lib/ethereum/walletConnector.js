@@ -103,7 +103,6 @@ resetWallet = function function_name (argument) {
         console.log(tx._id);
         try {
             Transactions.remove(tx._id);
-            TransactionsNeedConfirmed.remove(tx._id); // NEW ADDED BY CLEMENT 2018 6.19
         } catch(e){
             console.error(e);
         }

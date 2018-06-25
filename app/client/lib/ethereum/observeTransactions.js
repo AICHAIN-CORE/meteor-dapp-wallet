@@ -55,7 +55,7 @@ Add new in/outgoing transaction
 */
 addTransaction = function(log, from, to, value){
     var txId = Helpers.makeId('tx', log.transactionHash);
-    
+
     // add the tx already here
     Transactions.upsert(txId, {
         tokenId: log.tokenId,
@@ -117,7 +117,7 @@ var updateTransaction = function(newDocument, transaction, receipt){
     // if no tx was found, means it was never created, or removed, through log.removed: true
     if(!oldTx)
         return;
-    
+
     newDocument._id = id;
 
     if(transaction) {
@@ -216,7 +216,7 @@ var updateTransaction = function(newDocument, transaction, receipt){
             newDocument.from = oldTx.from;
             newDocument.to = oldTx.to;
             newDocument.value = oldTx.value;
-        } 
+        }
 
         if(!oldTx.tokenId && newDocument.tokenId) {
             delete newDocument.from;
