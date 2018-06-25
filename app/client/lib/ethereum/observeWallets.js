@@ -341,8 +341,10 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
 
         // delete the last tx and pc until block -500
         _.each(Transactions.find({_id: {$in: newDocument.transactions || []}, blockNumber: {$exists: true, $gt: blockToCheckBack}}).fetch(), function(tx){
-            if(tx)
+            if(tx) {
                 Transactions.remove({_id: tx._id});
+                TransactionsNeedConfirmed.remove({_id: tx._id}); // NEW ADDED BY CLEMENT 2018 6.19 
+            }
         });
         _.each(PendingConfirmations.find({from: newDocument.address, blockNumber: {$exists: true, $gt: blockToCheckBack}}).fetch(), function(pc){
             if(pc)
@@ -378,6 +380,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                 if(log.event === 'Deposit') {
                     if(log.removed) {
                         Transactions.remove({_id: Helpers.makeId('tx', log.transactionHash)});
+                        TransactionsNeedConfirmed.remove({_id: Helpers.makeId('tx', log.transactionHash)}); // NEW ADDED BY CLEMENT 2018 6.19 
                         return;
                     }
 
@@ -410,6 +413,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                 if(log.event === 'SingleTransact' || log.event === 'MultiTransact') {
                     if(log.removed) {
                         Transactions.remove({_id: Helpers.makeId('tx', log.transactionHash)});
+                        TransactionsNeedConfirmed.remove({_id: Helpers.makeId('tx', log.transactionHash)}); // NEW ADDED BY CLEMENT 2018 6.19 
                         return;
                     }
                     
@@ -487,6 +491,7 @@ var setupContractFilters = function(newDocument, checkFromCreationBlock){
                             var extistingTxId = Helpers.makeId('tx', log.transactionHash);
                             Meteor.setTimeout(function() {
                                 Transactions.remove(extistingTxId);
+                                TransactionsNeedConfirmed.remove(extistingTxId); // NEW ADDED BY CLEMENT 2018 6.19
                             }, 500);
                         }
                         
@@ -781,8 +786,10 @@ observeWallets = function(){
 
             // delete the all tx and pending conf
             _.each(Transactions.find({from: newDocument.address}).fetch(), function(tx){
-                if(!Wallets.findOne({transactions: tx._id}) && !AITAccounts.findOne({transactions: tx._id}))
+                if(!Wallets.findOne({transactions: tx._id}) && !AITAccounts.findOne({transactions: tx._id})) {
                     Transactions.remove(tx._id);
+                    TransactionsNeedConfirmed.remove(tx._id); // NEW ADDED BY CLEMENT 2018 6.19
+                }
             });
             _.each(PendingConfirmations.find({from: newDocument.address}).fetch(), function(pc){
                 PendingConfirmations.remove(pc._id);
